@@ -1,207 +1,371 @@
-# System Architecture
+# Linux Corporate Infrastructure Lab
 
-## 1. Overview
+Laboratório de infraestrutura corporativa virtualizada desenvolvido para estudos práticos de **administração Linux, redes, firewall, serviços de diretório, DNS, compartilhamento de arquivos, monitoramento e troubleshooting**.
 
-The Linux Corporate Infrastructure Lab is a virtualized
-corporate infrastructure environment designed for practical
-studies in Linux administration, networking, directory
-services, monitoring and troubleshooting.
-
-The environment will be hosted on a Proxmox VE hypervisor.
-
-The infrastructure will use an isolated internal network,
-protected by a virtual firewall.
+O ambiente será hospedado em um servidor **Proxmox VE**, utilizando máquinas virtuais para simular uma infraestrutura corporativa em um ambiente controlado e isolado.
 
 ---
 
-## 2. Virtualization Platform
+## 📌 Status do Projeto
 
-| Component | Configuration |
-|---|---|
-| Hypervisor | Proxmox VE |
-| CPU | Intel Core i7-2600 |
-| CPU Threads | 8 |
-| RAM | 8 GB |
-| Primary Storage | 240 GB SSD |
-| Secondary Storage | 320 GB HDD |
+**Status:** Em desenvolvimento
 
-Due to the limited hardware resources available in the
-laboratory, virtual machines will be provisioned according
-to their actual workload.
+| Componente               | Status                 |
+| ------------------------ | ---------------------- |
+| Proxmox VE               | 🟢 Base do laboratório |
+| Rede WAN                 | 🟡 Em implementação    |
+| Rede LAN                 | 🟡 Em implementação    |
+| FW01 - OPNsense          | ⚪ Planejado            |
+| DC01 - Samba AD          | ⚪ Planejado            |
+| SRV01 - File Server      | ⚪ Planejado            |
+| MON01 - Zabbix / Grafana | ⚪ Planejado            |
+| WKS01 - Windows          | ⚪ Planejado            |
+| WKS02 - Linux            | ⚪ Planejado            |
 
-Non-essential virtual machines may remain powered off when
-not required.
+> O status dos componentes será atualizado conforme a implementação do laboratório avançar.
 
 ---
 
-## 3. Network Architecture
+# 1. Overview
 
-The environment will use two logical networks.
+O **Linux Corporate Infrastructure Lab** é um ambiente virtualizado de infraestrutura corporativa desenvolvido para estudos práticos de:
 
-### WAN
+* Administração de sistemas Linux
+* Administração de redes
+* Firewall e roteamento
+* Active Directory
+* Samba
+* DNS
+* Kerberos
+* LDAP
+* Compartilhamento de arquivos
+* Monitoramento de infraestrutura
+* Troubleshooting
+* Integração entre Windows e Linux
+* Documentação de infraestrutura
 
-The WAN network provides connectivity between the laboratory
-and the existing physical network.
+A infraestrutura será hospedada sobre o **Proxmox VE** e utilizará uma rede interna isolada da rede física.
+
+A comunicação entre a rede física e a rede interna será controlada por um **firewall virtual**.
+
+---
+
+# 2. Virtualization Platform
+
+O laboratório será executado sobre um servidor **Proxmox VE**.
+
+| Componente        | Configuração       |
+| ----------------- | ------------------ |
+| Hypervisor        | Proxmox VE         |
+| CPU               | Intel Core i7-2600 |
+| CPU Threads       | 8                  |
+| RAM               | 8 GB               |
+| Primary Storage   | 240 GB SSD         |
+| Secondary Storage | 320 GB HDD         |
+
+Devido aos recursos limitados disponíveis no laboratório, as máquinas virtuais serão provisionadas de acordo com a necessidade de cada serviço.
+
+Máquinas virtuais que não forem necessárias durante determinada etapa poderão permanecer desligadas para reduzir o consumo de recursos.
+
+---
+
+# 3. Network Architecture
+
+A infraestrutura utilizará duas redes lógicas:
+
+* **WAN:** `192.168.1.0/24`
+* **LAN:** `10.10.10.0/24`
+
+## 3.1 WAN
+
+A rede WAN fornecerá conectividade entre o laboratório e a rede física existente.
 
 ```text
-192.168.1.0/24
+Network: 192.168.1.0/24
+Interface: vmbr0
 ```
-The Proxmox host is connected to this network through
-vmbr0.
 
-LAN
+O host Proxmox estará conectado à rede física através da bridge `vmbr0`.
 
-The laboratory's internal network will be isolated from the
-physical network.
+---
 
-10.10.10.0/24
+## 3.2 LAN
 
-The internal network will be connected through vmbr1.
+A rede LAN será utilizada pelos serviços e estações do laboratório.
 
-The virtual firewall will provide routing and security
-between the WAN and LAN networks.
+```text
+Network: 10.10.10.0/24
+Interface: vmbr1
+Gateway: 10.10.10.1
+```
 
-## 4. Network Interfaces
-                     PHYSICAL NETWORK
+A rede interna será isolada da rede física.
+
+O firewall virtual será responsável pelo roteamento e controle do tráfego entre WAN e LAN.
+
+---
+
+# 4. Network Architecture Diagram
+
+```text
+                    PHYSICAL NETWORK
                      192.168.1.0/24
                             |
-                         vmbr0
+                          vmbr0
                             |
                     +-------+-------+
                     |     FW01     |
+                    |   OPNsense   |
                     |   Firewall   |
                     +-------+-------+
                             |
-                         vmbr1
+                          vmbr1
                             |
                      10.10.10.0/24
                             |
-            +---------------+---------------+
-            |               |               |
-          DC01            SRV01           MON01
-       10.10.10.10     10.10.10.20     10.10.10.30
+          +-----------------+-----------------+
+          |                 |                 |
+        DC01              SRV01             MON01
+     10.10.10.10       10.10.10.20       10.10.10.30
+          |                 |                 |
+      Samba AD           File Server       Zabbix
+        DNS                SMB             Grafana
+          |
+       +--+--+
+       |     |
+     WKS01 WKS02
+    Windows Linux
+      DHCP  DHCP
+```
 
-## 5. Virtual Machines
+---
+
+# 5. Network Interfaces
+
+| Interface | Purpose                     | Network          |
+| --------- | --------------------------- | ---------------- |
+| `vmbr0`   | WAN / Physical Network      | `192.168.1.0/24` |
+| `vmbr1`   | Internal Laboratory Network | `10.10.10.0/24`  |
+
+The virtual firewall `FW01` will have interfaces connected to both bridges:
+
+```text
 FW01
-Parameter	Configuration
-Hostname	FW01
-Platform	OPNsense
-Role	Firewall / Router
-WAN	DHCP / Physical Network
-LAN	10.10.10.1
-Interfaces	vmbr0 + vmbr1
+├── WAN → vmbr0
+└── LAN → vmbr1
+```
 
-FW01 will provide routing and firewall services between
-the physical network and the internal laboratory network.
+---
 
-DC01
-Parameter	Configuration
-Hostname	DC01
-OS	Debian Linux
-Role	Samba Active Directory / DNS
-IP	10.10.10.10
-Interface	vmbr1
-GUI	None
+# 6. Virtual Machines
 
-DC01 will provide:
+## 6.1 FW01 — Firewall / Router
 
-Samba Active Directory
-DNS
-Kerberos
-LDAP
-Domain authentication
-SRV01
-Parameter	Configuration
-Hostname	SRV01
-OS	Debian Linux
-Role	File Server
-IP	10.10.10.20
-Interface	vmbr1
-GUI	None
+| Parameter  | Configuration           |
+| ---------- | ----------------------- |
+| Hostname   | `FW01`                  |
+| Platform   | OPNsense                |
+| Role       | Firewall / Router       |
+| WAN        | DHCP / Physical Network |
+| LAN        | `10.10.10.1`            |
+| Interfaces | `vmbr0` + `vmbr1`       |
 
-SRV01 will provide file-sharing services using SMB.
+### Responsibilities
 
-MON01
-Parameter	Configuration
-Hostname	MON01
-OS	Debian Linux
-Role	Monitoring
-IP	10.10.10.30
-Interface	vmbr1
-GUI	None
+`FW01` será responsável por:
 
-MON01 will host:
+* Roteamento entre WAN e LAN
+* Firewall
+* Controle de tráfego
+* Gateway da rede interna
+* Isolamento da rede do laboratório
+* Regras de acesso entre redes
 
-Zabbix
-Grafana
-WKS01
-Parameter	Configuration
-Hostname	WKS01
-OS	Windows
-Role	Corporate workstation
-Addressing	DHCP
-Interface	vmbr1
-GUI	Yes
+---
 
-WKS01 will be used to validate Windows integration
-with the Samba Active Directory domain.
+## 6.2 DC01 — Domain Controller
 
-WKS02
-Parameter	Configuration
-Hostname	WKS02
-OS	Debian Linux
-Role	Linux workstation
-Addressing	DHCP
-Interface	vmbr1
-GUI	Yes
+| Parameter | Configuration                |
+| --------- | ---------------------------- |
+| Hostname  | `DC01`                       |
+| OS        | Debian Linux                 |
+| Role      | Samba Active Directory / DNS |
+| IP        | `10.10.10.10`                |
+| Interface | `vmbr1`                      |
+| GUI       | None                         |
 
-WKS02 will be used to validate Linux workstation
-integration with the domain.
+### Services
 
-## 6. Resource Allocation
+`DC01` fornecerá:
 
-The laboratory has limited hardware resources.
+* Samba Active Directory
+* DNS
+* Kerberos
+* LDAP
+* Domain Authentication
+* Users and Groups
 
-Initial resource allocation:
+O servidor será utilizado como controlador de domínio do ambiente de laboratório.
 
-VM	vCPU	RAM	Storage
-FW01	1	512 MB - 1 GB	8 GB
-DC01	2	1 GB	16 GB
-SRV01	1	1 GB	16 GB
-MON01	2	2 GB	32 GB
-WKS01	2	2 GB+	32 GB+
-WKS02	2	1 GB+	16 GB+
+---
 
-Resource allocation may be adjusted according to
-actual workload and available system memory.
+## 6.3 SRV01 — File Server
 
-## 7. Storage Strategy
+| Parameter | Configuration |
+| --------- | ------------- |
+| Hostname  | `SRV01`       |
+| OS        | Debian Linux  |
+| Role      | File Server   |
+| IP        | `10.10.10.20` |
+| Interface | `vmbr1`       |
+| GUI       | None          |
 
-The 240 GB SSD will be prioritized for services that
-benefit from faster storage.
+### Services
 
-The 320 GB HDD may be used for:
+`SRV01` fornecerá serviços de compartilhamento de arquivos utilizando **SMB**.
 
-ISO images
-Backups
-Less frequently used virtual machines
-Laboratory data
-Test environments
+O servidor também será utilizado para validar:
 
-Storage allocation will be documented as the environment
-is implemented.
+* Permissões de arquivos
+* Permissões de compartilhamento
+* Acesso por usuários do domínio
+* Integração com o Active Directory
 
-## 8. Server Operating System Standard
+---
 
-All Linux infrastructure servers will use a minimal
-installation without a graphical interface.
+## 6.4 MON01 — Monitoring Server
 
-Server administration will primarily be performed remotely
-through SSH.
+| Parameter | Configuration |
+| --------- | ------------- |
+| Hostname  | `MON01`       |
+| OS        | Debian Linux  |
+| Role      | Monitoring    |
+| IP        | `10.10.10.30` |
+| Interface | `vmbr1`       |
+| GUI       | None          |
 
-Standard administration tools include:
+### Services
 
-SSH
+`MON01` hospedará:
+
+* Zabbix
+* Grafana
+
+O servidor será utilizado para monitoramento da infraestrutura e visualização de métricas.
+
+---
+
+## 6.5 WKS01 — Windows Workstation
+
+| Parameter  | Configuration         |
+| ---------- | --------------------- |
+| Hostname   | `WKS01`               |
+| OS         | Windows               |
+| Role       | Corporate Workstation |
+| Addressing | DHCP                  |
+| Interface  | `vmbr1`               |
+| GUI        | Yes                   |
+
+`WKS01` será utilizado para validar a integração de uma estação Windows com o domínio Samba Active Directory.
+
+Testes previstos:
+
+* Ingresso no domínio
+* Autenticação de usuários
+* Resolução DNS
+* Acesso a recursos compartilhados
+* Aplicação de permissões
+
+---
+
+## 6.6 WKS02 — Linux Workstation
+
+| Parameter  | Configuration     |
+| ---------- | ----------------- |
+| Hostname   | `WKS02`           |
+| OS         | Debian Linux      |
+| Role       | Linux Workstation |
+| Addressing | DHCP              |
+| Interface  | `vmbr1`           |
+| GUI        | Yes               |
+
+`WKS02` será utilizado para validar a integração de uma estação Linux com o domínio.
+
+Testes previstos:
+
+* Integração com Active Directory
+* Autenticação de usuários
+* Resolução DNS
+* Acesso a recursos do domínio
+* Acesso ao File Server
+
+---
+
+# 7. Resource Allocation
+
+O laboratório possui recursos computacionais limitados.
+
+A alocação inicial das máquinas virtuais será:
+
+| VM    | vCPU |           RAM | Storage |
+| ----- | ---: | ------------: | ------: |
+| FW01  |    1 | 512 MB – 1 GB |    8 GB |
+| DC01  |    2 |          1 GB |   16 GB |
+| SRV01 |    1 |          1 GB |   16 GB |
+| MON01 |    2 |          2 GB |   32 GB |
+| WKS01 |    2 |         2 GB+ |  32 GB+ |
+| WKS02 |    2 |         1 GB+ |  16 GB+ |
+
+> Os recursos poderão ser ajustados conforme a utilização real de CPU, memória e armazenamento.
+
+> Como o host possui 8 GB de RAM, nem todas as máquinas virtuais precisarão permanecer ligadas simultaneamente.
+
+---
+
+# 8. Storage Strategy
+
+O armazenamento será dividido entre SSD e HDD de acordo com o tipo de utilização.
+
+## 8.1 Primary Storage — SSD
+
+O SSD de **240 GB** será priorizado para serviços que apresentem maior benefício com armazenamento de maior desempenho.
+
+Possíveis utilizações:
+
+* Máquinas virtuais de infraestrutura
+* Serviços de monitoramento
+* Sistemas operacionais
+* Serviços utilizados com maior frequência
+
+---
+
+## 8.2 Secondary Storage — HDD
+
+O HDD de **320 GB** poderá ser utilizado para:
+
+* ISO images
+* Backups
+* Máquinas virtuais utilizadas com menor frequência
+* Dados do laboratório
+* Ambientes de teste
+* Arquivos de documentação
+
+A utilização definitiva do armazenamento será documentada conforme o laboratório for implementado.
+
+---
+
+# 9. Server Operating System Standard
+
+Todos os servidores Linux da infraestrutura utilizarão instalação mínima, sem interface gráfica.
+
+A administração será realizada principalmente de forma remota através de **SSH**.
+
+## Standard Administration Tools
+
+As principais ferramentas utilizadas serão:
+
+```text
+ssh
 systemctl
 journalctl
 apt
@@ -213,77 +377,376 @@ df
 du
 top
 ps
+```
 
-## 9. Workstation Standard
+Outras ferramentas poderão ser adicionadas conforme a necessidade de cada serviço.
 
-Workstations may use graphical interfaces.
+---
 
-The laboratory will contain both:
+# 10. Workstation Standard
 
-Windows workstation
-Linux workstation
+As estações de trabalho poderão utilizar interfaces gráficas.
 
-This allows testing of a heterogeneous corporate
-environment.
+O laboratório terá dois tipos de workstation:
 
-## 10. Implementation Order
+| Workstation | Operating System | Purpose                    |
+| ----------- | ---------------- | -------------------------- |
+| WKS01       | Windows          | Windows Domain Integration |
+| WKS02       | Linux            | Linux Domain Integration   |
 
-The infrastructure will be implemented in stages.
+A utilização de sistemas Windows e Linux permitirá testar um ambiente corporativo heterogêneo.
 
-Phase 1 — Network foundation
- Validate Proxmox network
- Validate vmbr0
- Validate vmbr1
- Deploy FW01
- Configure WAN
- Configure LAN
- Validate routing
-Phase 2 — Directory services
- Deploy DC01
- Configure static IP
- Install Samba
- Provision Active Directory
- Configure DNS
- Validate Kerberos
- Create users and groups
-Phase 3 — File services
- Deploy SRV01
- Configure SMB
- Configure permissions
- Integrate with Active Directory
-Phase 4 — Monitoring
- Deploy MON01
- Install Zabbix
- Configure monitoring agents
- Install Grafana
- Create dashboards
-Phase 5 — Workstations
- Deploy WKS01
- Join Windows workstation to domain
- Deploy WKS02
- Join Linux workstation to domain
- Validate authentication
-Phase 6 — Operations
- Create monitoring alerts
- Simulate infrastructure failures
- Perform troubleshooting
- Document incidents
- Test service recovery
+---
 
-## 11. Design Principles
+# 11. Implementation Plan
+
+A infraestrutura será implementada de forma incremental.
+
+Cada componente deverá ser validado antes da implementação da próxima etapa.
+
+---
+
+## Phase 1 — Network Foundation
+
+### Tasks
+
+* [ ] Validate Proxmox network configuration
+* [ ] Validate `vmbr0`
+* [ ] Validate `vmbr1`
+* [ ] Deploy `FW01`
+* [ ] Configure WAN
+* [ ] Configure LAN
+* [ ] Configure LAN gateway
+* [ ] Configure firewall rules
+* [ ] Validate routing
+* [ ] Validate Internet connectivity
+* [ ] Validate LAN isolation
+
+---
+
+## Phase 2 — Directory Services
+
+### Tasks
+
+* [ ] Deploy `DC01`
+* [ ] Configure static IP
+* [ ] Install Samba
+* [ ] Provision Active Directory
+* [ ] Configure DNS
+* [ ] Configure Kerberos
+* [ ] Validate domain functionality
+* [ ] Create organizational structure
+* [ ] Create users
+* [ ] Create groups
+* [ ] Test authentication
+
+---
+
+## Phase 3 — File Services
+
+### Tasks
+
+* [ ] Deploy `SRV01`
+* [ ] Configure static IP
+* [ ] Install Samba/SMB
+* [ ] Configure shared folders
+* [ ] Configure permissions
+* [ ] Integrate with Active Directory
+* [ ] Test domain user access
+* [ ] Test permissions
+* [ ] Validate Windows access
+* [ ] Validate Linux access
+
+---
+
+## Phase 4 — Monitoring
+
+### Tasks
+
+* [ ] Deploy `MON01`
+* [ ] Configure static IP
+* [ ] Install Zabbix
+* [ ] Configure Zabbix Server
+* [ ] Configure monitoring agents
+* [ ] Add infrastructure hosts
+* [ ] Configure monitoring items
+* [ ] Configure triggers
+* [ ] Install Grafana
+* [ ] Integrate Grafana with Zabbix
+* [ ] Create dashboards
+
+---
+
+## Phase 5 — Workstations
+
+### WKS01 — Windows
+
+* [ ] Deploy Windows workstation
+* [ ] Configure DHCP
+* [ ] Configure DNS
+* [ ] Validate connectivity with `DC01`
+* [ ] Join workstation to domain
+* [ ] Test domain authentication
+* [ ] Test access to shared folders
+
+### WKS02 — Linux
+
+* [ ] Deploy Linux workstation
+* [ ] Configure DHCP
+* [ ] Configure DNS
+* [ ] Validate connectivity with `DC01`
+* [ ] Configure domain integration
+* [ ] Test domain authentication
+* [ ] Test access to shared folders
+
+---
+
+## Phase 6 — Operations and Troubleshooting
+
+The final stage will focus on operational procedures and troubleshooting.
+
+### Tasks
+
+* [ ] Create monitoring alerts
+* [ ] Simulate infrastructure failures
+* [ ] Troubleshoot service failures
+* [ ] Troubleshoot network connectivity
+* [ ] Troubleshoot DNS
+* [ ] Troubleshoot authentication
+* [ ] Troubleshoot file permissions
+* [ ] Document incidents
+* [ ] Document root causes
+* [ ] Test service recovery
+* [ ] Document recovery procedures
+
+---
+
+# 12. Troubleshooting Scenarios
+
+The laboratory will also be used to simulate common infrastructure incidents.
+
+Examples include:
+
+```text
+Network connectivity failure
+        ↓
+DNS failure
+        ↓
+Domain authentication failure
+        ↓
+File server unavailable
+        ↓
+Incorrect permissions
+        ↓
+Monitoring alert
+        ↓
+Service failure
+        ↓
+Resource exhaustion
+```
+
+Possible scenarios include:
+
+* High CPU utilization
+* High memory utilization
+* Disk space exhaustion
+* Network interface failure
+* DNS resolution failure
+* Firewall rule misconfiguration
+* Service stopped
+* Incorrect file permissions
+* Domain authentication failure
+* SMB connectivity failure
+* Monitoring agent failure
+
+Each scenario should be documented with:
+
+1. Symptoms
+2. Investigation
+3. Commands used
+4. Root cause
+5. Corrective action
+6. Validation
+7. Preventive action
+
+---
+
+# 13. Documentation Standards
+
+Configuration changes and troubleshooting procedures will be documented throughout the implementation.
+
+Documentation should include:
+
+* Date
+* Component
+* Change performed
+* Reason for change
+* Commands executed
+* Configuration changes
+* Validation performed
+* Result
+* Problems encountered
+* Resolution
+
+The objective is to maintain a reproducible record of the laboratory.
+
+---
+
+# 14. Design Principles
 
 The laboratory follows the following principles:
 
-Keep infrastructure services isolated from the physical
-network whenever practical.
+### Network Isolation
+
+Keep infrastructure services isolated from the physical network whenever practical.
+
+### Static Infrastructure Addressing
+
 Use static IP addresses for infrastructure servers.
+
+### Dynamic Client Addressing
+
 Use DHCP for client workstations.
-Keep Linux servers without graphical interfaces.
+
+### Minimal Server Installation
+
+Keep Linux infrastructure servers without graphical interfaces whenever practical.
+
+### Remote Administration
+
 Prefer remote administration through SSH.
-Validate each infrastructure component before moving to
-the next stage.
-Document configuration changes.
-Simulate failures in a controlled environment.
-Document troubleshooting procedures and root causes.
-Avoid unnecessary resource consumption due to the
-laboratory's hardware limitations.
+
+### Incremental Implementation
+
+Validate each infrastructure component before moving to the next stage.
+
+### Documentation
+
+Document configuration changes, incidents, troubleshooting procedures and root causes.
+
+### Controlled Failure Simulation
+
+Simulate infrastructure failures in a controlled environment.
+
+### Resource Optimization
+
+Avoid unnecessary resource consumption due to the laboratory's hardware limitations.
+
+---
+
+# 15. Project Structure
+
+The documentation and configuration files will be organized as the project evolves.
+
+```text
+linux-corporate-infrastructure-lab/
+│
+├── README.md
+│
+├── docs/
+│   ├── network.md
+│   ├── proxmox.md
+│   ├── opnsense.md
+│   ├── samba-ad.md
+│   ├── file-server.md
+│   ├── zabbix.md
+│   ├── grafana.md
+│   └── troubleshooting.md
+│
+├── diagrams/
+│   └── network.txt
+│
+├── scripts/
+│   ├── linux/
+│   └── windows/
+│
+├── configs/
+│
+└── screenshots/
+```
+
+> Diretórios e arquivos serão adicionados conforme cada etapa do laboratório for implementada.
+
+---
+
+# 16. Planned Services
+
+| Hostname | Service                    | IP Address    |
+| -------- | -------------------------- | ------------- |
+| `FW01`   | OPNsense Firewall / Router | `10.10.10.1`  |
+| `DC01`   | Samba AD / DNS             | `10.10.10.10` |
+| `SRV01`  | SMB File Server            | `10.10.10.20` |
+| `MON01`  | Zabbix / Grafana           | `10.10.10.30` |
+| `WKS01`  | Windows Workstation        | DHCP          |
+| `WKS02`  | Linux Workstation          | DHCP          |
+
+---
+
+# 17. Expected Learning Outcomes
+
+Ao final da implementação, o laboratório deverá permitir a prática dos seguintes conhecimentos:
+
+* Proxmox VE
+* Virtualização
+* Linux Server Administration
+* TCP/IP
+* Subnetting
+* VLAN and network segmentation concepts
+* Firewall
+* Routing
+* DNS
+* DHCP
+* Samba
+* Active Directory
+* Kerberos
+* LDAP
+* SMB
+* Windows Domain Integration
+* Linux Domain Integration
+* Zabbix
+* Grafana
+* System Monitoring
+* Troubleshooting
+* Incident Documentation
+* Infrastructure Documentation
+
+---
+
+# 18. Future Improvements
+
+Conforme os recursos disponíveis e a evolução do laboratório, novas funcionalidades poderão ser adicionadas.
+
+Possíveis melhorias:
+
+* [ ] Additional Linux servers
+* [ ] Additional Windows workstation
+* [ ] Centralized logging
+* [ ] Backup server
+* [ ] Ansible automation
+* [ ] Git-based configuration management
+* [ ] Network monitoring
+* [ ] Advanced firewall rules
+* [ ] VLAN segmentation
+* [ ] VPN
+* [ ] High availability experiments
+* [ ] Infrastructure-as-Code experiments
+* [ ] Automated deployment
+* [ ] Disaster recovery testing
+
+---
+
+# 19. Conclusion
+
+O **Linux Corporate Infrastructure Lab** tem como objetivo fornecer um ambiente controlado para desenvolvimento e documentação de conhecimentos relacionados à infraestrutura de TI.
+
+A implementação será realizada de forma gradual, começando pela fundação de rede e avançando para serviços de diretório, compartilhamento de arquivos, monitoramento, integração de estações Windows/Linux e troubleshooting.
+
+Todo o processo será documentado para permitir a reprodução do ambiente e registrar os problemas encontrados, soluções aplicadas e conhecimentos adquiridos durante a implementação.
+
+---
+
+## Author
+
+**Linux Corporate Infrastructure Lab**
+
+Projeto pessoal de estudos e prática em infraestrutura de TI.
