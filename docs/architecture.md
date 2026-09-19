@@ -16,7 +16,7 @@ O ambiente será hospedado em um servidor **Proxmox VE**, utilizando máquinas v
 | Rede WAN                 | 🟢 Concluído / Validado |
 | Rede LAN                 | 🟢 Concluído / Validado |
 | FW01 - OPNsense          | 🟢 Concluído / Validado |
-| DC01 - Samba AD          | 🟡 Em implementação     |
+| DC01 - Samba AD          | 🟡 Em Implementação     |
 | SRV01 - File Server      | ⚪ Planejado            |
 | MON01 - Zabbix / Grafana | ⚪ Planejado            |
 | WKS01 - Windows          | ⚪ Planejado            |
@@ -26,7 +26,7 @@ O ambiente será hospedado em um servidor **Proxmox VE**, utilizando máquinas v
 
 ---
 
-# 1. Overview
+# 1. Visão Geral
 
 O **Linux Corporate Infrastructure Lab** é um ambiente virtualizado de infraestrutura corporativa desenvolvido para estudos práticos de:
 
@@ -69,7 +69,7 @@ Máquinas virtuais que não forem necessárias durante determinada etapa poderã
 
 ---
 
-# 3. Network Architecture
+# 3. Arquitetura da Rede
 
 A infraestrutura utilizará duas redes lógicas:
 
@@ -105,10 +105,10 @@ O firewall virtual será responsável pelo roteamento e controle do tráfego ent
 
 ---
 
-# 4. Network Architecture Diagram
+# 4. Diagrama da Arquitetura da Rede
 
 ```text
-                    PHYSICAL NETWORK
+                      REDE FÍSICA
                      192.168.1.0/24
                             |
                           vmbr0
@@ -140,14 +140,14 @@ O firewall virtual será responsável pelo roteamento e controle do tráfego ent
 
 ---
 
-# 5. Network Interfaces
+# 5. Interfaces de Rede
 
-| Interface | Purpose                     | Network          |
+| Interface | Propósito                   | Rede             |
 | --------- | --------------------------- | ---------------- |
-| `vmbr0`   | WAN / Physical Network      | `192.168.1.0/24` |
-| `vmbr1`   | Internal Laboratory Network | `10.10.10.0/24`  |
+| `vmbr0`   | WAN / Rede Física           | `192.168.1.0/24` |
+| `vmbr1`   | Rede Interna do Laboratório | `10.10.10.0/24`  |
 
-The virtual firewall `FW01` will have interfaces connected to both bridges:
+O Firewall virtual `FW01` terá interfaces conectadas em ambas bridges:
 
 ```text
 FW01
@@ -157,20 +157,20 @@ FW01
 
 ---
 
-# 6. Virtual Machines
+# 6. Máquinas Virtuais
 
 ## 6.1 FW01 — Firewall / Router
 
-| Parameter  | Configuration           |
+| Parâmetro  | Configuração            |
 | ---------- | ----------------------- |
 | Hostname   | `FW01`                  |
 | Platform   | OPNsense                |
 | Role       | Firewall / Router       |
-| WAN        | DHCP / Physical Network |
+| WAN        | DHCP / Rede Física |
 | LAN        | `10.10.10.1`            |
 | Interfaces | `vmbr0` + `vmbr1`       |
 
-### Responsibilities
+### Responsabilidades
 
 `FW01` será responsável por:
 
@@ -183,18 +183,18 @@ FW01
 
 ---
 
-## 6.2 DC01 — Domain Controller
+## 6.2 DC01 — Domain Controller (Controlador de Domínio)
 
-| Parameter | Configuration                |
+| Parâmetro | Configuração                |
 | --------- | ---------------------------- |
 | Hostname  | `DC01`                       |
 | OS        | Debian Linux                 |
 | Role      | Samba Active Directory / DNS |
 | IP        | `10.10.10.10`                |
 | Interface | `vmbr1`                      |
-| GUI       | None                         |
+| GUI       | Nenhuma                      |
 
-### Services
+### Serviços
 
 `DC01` fornecerá:
 
@@ -209,18 +209,18 @@ O servidor será utilizado como controlador de domínio do ambiente de laborató
 
 ---
 
-## 6.3 SRV01 — File Server
+## 6.3 SRV01 — File Server (Servidor de Arquivos)
 
-| Parameter | Configuration |
+| Parâmetro | Configuração |
 | --------- | ------------- |
 | Hostname  | `SRV01`       |
 | OS        | Debian Linux  |
 | Role      | File Server   |
 | IP        | `10.10.10.20` |
 | Interface | `vmbr1`       |
-| GUI       | None          |
+| GUI       | Nenhuma       |
 
-### Services
+### Serviços
 
 `SRV01` fornecerá serviços de compartilhamento de arquivos utilizando **SMB**.
 
@@ -233,18 +233,18 @@ O servidor também será utilizado para validar:
 
 ---
 
-## 6.4 MON01 — Monitoring Server
+## 6.4 MON01 — Monitoring  (Servidor de Monitoramento)
 
-| Parameter | Configuration |
+| Parâmetro | Configuração  |
 | --------- | ------------- |
 | Hostname  | `MON01`       |
 | OS        | Debian Linux  |
 | Role      | Monitoring    |
 | IP        | `10.10.10.30` |
 | Interface | `vmbr1`       |
-| GUI       | None          |
+| GUI       | Nenhuma       |
 
-### Services
+### Serviços
 
 `MON01` hospedará:
 
@@ -255,16 +255,16 @@ O servidor será utilizado para monitoramento da infraestrutura e visualização
 
 ---
 
-## 6.5 WKS01 — Windows Workstation
+## 6.5 WKS01 — Windows Workstation (Estação de Trabalho Windows)
 
-| Parameter  | Configuration         |
+| Parâmetro  | Configuração         |
 | ---------- | --------------------- |
 | Hostname   | `WKS01`               |
 | OS         | Windows               |
 | Role       | Corporate Workstation |
 | Addressing | DHCP                  |
 | Interface  | `vmbr1`               |
-| GUI        | Yes                   |
+| GUI        | Sim                   |
 
 `WKS01` será utilizado para validar a integração de uma estação Windows com o domínio Samba Active Directory.
 
@@ -278,16 +278,16 @@ Testes previstos:
 
 ---
 
-## 6.6 WKS02 — Linux Workstation
+## 6.6 WKS02 — Linux Workstation (Estação de Trabalho Linux)
 
-| Parameter  | Configuration     |
+| Parâmetro  | Configuração     |
 | ---------- | ----------------- |
 | Hostname   | `WKS02`           |
 | OS         | Debian Linux      |
 | Role       | Linux Workstation |
 | Addressing | DHCP              |
 | Interface  | `vmbr1`           |
-| GUI        | Yes               |
+| GUI        | Sim               |
 
 `WKS02` será utilizado para validar a integração de uma estação Linux com o domínio.
 
