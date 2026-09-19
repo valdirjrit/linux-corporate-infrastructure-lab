@@ -16,7 +16,7 @@ O ambiente será hospedado em um servidor **Proxmox VE**, utilizando máquinas v
 | Rede WAN                 | 🟢 Concluído / Validado |
 | Rede LAN                 | 🟢 Concluído / Validado |
 | FW01 - OPNsense          | 🟢 Concluído / Validado |
-| DC01 - Samba AD          | ⚪ Planejado            |
+| DC01 - Samba AD          | 🟡 Em implementação     |
 | SRV01 - File Server      | ⚪ Planejado            |
 | MON01 - Zabbix / Grafana | ⚪ Planejado            |
 | WKS01 - Windows          | ⚪ Planejado            |
