@@ -79,3 +79,13 @@ through DHCP.
 | Windows |                 | Debian  |
 |  DHCP   |                 |  DHCP   |
 +---------+                 +---------+
+```
+---
+## 5. WAN Network
+
+The WAN side of the firewall connects to the existing physical network.
+
+- Network: `192.168.1.0/24`
+- Gateway: `192.168.1.1`
+- Firewall WAN: `192.168.1.3`
+- Addressing: DHCP

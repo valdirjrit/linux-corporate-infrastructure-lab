@@ -13,14 +13,14 @@ O ambiente será hospedado em um servidor **Proxmox VE**, utilizando máquinas v
 | Componente               | Status                 |
 | ------------------------ | ---------------------- |
 | Proxmox VE               | 🟢 Base do laboratório |
-| Rede WAN                 | 🟡 Em implementação    |
-| Rede LAN                 | 🟡 Em implementação    |
-| FW01 - OPNsense          | ⚪ Planejado            |
+| Rede WAN                 | 🟢 Concluído / Validado |
+| Rede LAN                 | 🟢 Concluído / Validado |
+| FW01 - OPNsense          | 🟢 Concluído / Validado |
 | DC01 - Samba AD          | ⚪ Planejado            |
 | SRV01 - File Server      | ⚪ Planejado            |
 | MON01 - Zabbix / Grafana | ⚪ Planejado            |
 | WKS01 - Windows          | ⚪ Planejado            |
-| WKS02 - Linux            | ⚪ Planejado            |
+| WKS02 - Linux            | 🟢 Concluído / Validado |
 
 > O status dos componentes será atualizado conforme a implementação do laboratório avançar.
 
@@ -56,9 +56,9 @@ O laboratório será executado sobre um servidor **Proxmox VE**.
 
 | Componente        | Configuração       |
 | ----------------- | ------------------ |
-| Hypervisor        | Proxmox VE         |
+| Hypervisor        | Proxmox VE 9.1.1   |
 | CPU               | Intel Core i7-2600 |
-| CPU Threads       | 8                  |
+| CPU Threads       | 4 cores / 8 Threads |
 | RAM               | 8 GB               |
 | Primary Storage   | 240 GB SSD         |
 | Secondary Storage | 320 GB HDD         |
@@ -410,12 +410,12 @@ Cada componente deverá ser validado antes da implementação da próxima etapa.
 
 ### Tasks
 
-* [ ] Validate Proxmox network configuration
-* [ ] Validate `vmbr0`
-* [ ] Validate `vmbr1`
-* [ ] Deploy `FW01`
-* [ ] Configure WAN
-* [ ] Configure LAN
+* [X] Validate Proxmox network configuration
+* [X] Validate `vmbr0`
+* [X] Validate `vmbr1`
+* [X] Deploy `FW01`
+* [X] Configure WAN
+* [X] Configure LAN
 * [ ] Configure LAN gateway
 * [ ] Configure firewall rules
 * [ ] Validate routing
@@ -491,8 +491,8 @@ Cada componente deverá ser validado antes da implementação da próxima etapa.
 
 ### WKS02 — Linux
 
-* [ ] Deploy Linux workstation
-* [ ] Configure DHCP
+* [X] Deploy Linux workstation
+* [X] Configure DHCP
 * [ ] Configure DNS
 * [ ] Validate connectivity with `DC01`
 * [ ] Configure domain integration
