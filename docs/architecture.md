@@ -301,7 +301,7 @@ Testes previstos:
 
 ---
 
-# 7. Resource Allocation
+# 7. Alocação de Recursos
 
 O laboratório possui recursos computacionais limitados.
 
@@ -309,12 +309,12 @@ A alocação inicial das máquinas virtuais será:
 
 | VM    | vCPU |           RAM | Storage |
 | ----- | ---: | ------------: | ------: |
-| FW01  |    1 | 512 MB – 1 GB |    8 GB |
-| DC01  |    2 |          1 GB |   16 GB |
-| SRV01 |    1 |          1 GB |   16 GB |
+| FW01  |    1 |          1 GB |   17 GB |
+| DC01  |    2 |          1 GB |   17 GB |
+| SRV01 |    1 |          1 GB |   17 GB |
 | MON01 |    2 |          2 GB |   32 GB |
 | WKS01 |    2 |         2 GB+ |  32 GB+ |
-| WKS02 |    2 |         1 GB+ |  16 GB+ |
+| WKS02 |    2 |         1 GB+ |  17 GB+ |
 
 > Os recursos poderão ser ajustados conforme a utilização real de CPU, memória e armazenamento.
 
@@ -322,11 +322,11 @@ A alocação inicial das máquinas virtuais será:
 
 ---
 
-# 8. Storage Strategy
+# 8. Estratégia de Armazenamento
 
 O armazenamento será dividido entre SSD e HDD de acordo com o tipo de utilização.
 
-## 8.1 Primary Storage — SSD
+## 8.1 Armazenamento Primário — SSD
 
 O SSD de **240 GB** será priorizado para serviços que apresentem maior benefício com armazenamento de maior desempenho.
 
@@ -339,7 +339,7 @@ Possíveis utilizações:
 
 ---
 
-## 8.2 Secondary Storage — HDD
+## 8.2 Armazenamento Secundário — HDD
 
 O HDD de **320 GB** poderá ser utilizado para:
 
@@ -354,13 +354,13 @@ A utilização definitiva do armazenamento será documentada conforme o laborat�
 
 ---
 
-# 9. Server Operating System Standard
+# 9. Sistema Operacional Server Padrão
 
 Todos os servidores Linux da infraestrutura utilizarão instalação mínima, sem interface gráfica.
 
 A administração será realizada principalmente de forma remota através de **SSH**.
 
-## Standard Administration Tools
+## Ferramentas Padrão de Administração
 
 As principais ferramentas utilizadas serão:
 
@@ -383,7 +383,7 @@ Outras ferramentas poderão ser adicionadas conforme a necessidade de cada servi
 
 ---
 
-# 10. Workstation Standard
+# 10. Padrão das Estações de Trabalho
 
 As estações de trabalho poderão utilizar interfaces gráficas.
 
@@ -398,7 +398,7 @@ A utilização de sistemas Windows e Linux permitirá testar um ambiente corpora
 
 ---
 
-# 11. Implementation Plan
+# 11. Plano de Implementação
 
 A infraestrutura será implementada de forma incremental.
 
@@ -406,9 +406,9 @@ Cada componente deverá ser validado antes da implementação da próxima etapa.
 
 ---
 
-## Phase 1 — Network Foundation
+## Fase 1 — Fundamentação de Rede
 
-### Tasks
+### Tarefas
 
 * [X] Validate Proxmox network configuration
 * [X] Validate `vmbr0`
@@ -416,23 +416,23 @@ Cada componente deverá ser validado antes da implementação da próxima etapa.
 * [X] Deploy `FW01`
 * [X] Configure WAN
 * [X] Configure LAN
-* [ ] Configure LAN gateway
+* [X] Configure LAN gateway
 * [ ] Configure firewall rules
-* [ ] Validate routing
-* [ ] Validate Internet connectivity
-* [ ] Validate LAN isolation
+* [X] Validate routing
+* [X] Validate Internet connectivity
+* [X] Validate LAN isolation
 
 ---
 
-## Phase 2 — Directory Services
+## Fase 2 — Serviços de Diretório
 
-### Tasks
+### Tarefas
 
-* [ ] Deploy `DC01`
-* [ ] Configure static IP
+* [X] Deploy `DC01`
+* [X] Configure static IP
 * [ ] Install Samba
 * [ ] Provision Active Directory
-* [ ] Configure DNS
+* [X] Configure DNS
 * [ ] Configure Kerberos
 * [ ] Validate domain functionality
 * [ ] Create organizational structure
@@ -442,9 +442,9 @@ Cada componente deverá ser validado antes da implementação da próxima etapa.
 
 ---
 
-## Phase 3 — File Services
+## Fase 3 — Serviços de Arquivos
 
-### Tasks
+### Tarefas
 
 * [ ] Deploy `SRV01`
 * [ ] Configure static IP
@@ -459,9 +459,9 @@ Cada componente deverá ser validado antes da implementação da próxima etapa.
 
 ---
 
-## Phase 4 — Monitoring
+## Fase 4 — Monitoramento
 
-### Tasks
+### Tarefas
 
 * [ ] Deploy `MON01`
 * [ ] Configure static IP
@@ -477,7 +477,7 @@ Cada componente deverá ser validado antes da implementação da próxima etapa.
 
 ---
 
-## Phase 5 — Workstations
+## Fase 5 — Estações de Trabalho
 
 ### WKS01 — Windows
 
@@ -501,11 +501,11 @@ Cada componente deverá ser validado antes da implementação da próxima etapa.
 
 ---
 
-## Phase 6 — Operations and Troubleshooting
+## Fase 6 — Operações e Soluções de Problemas
 
-The final stage will focus on operational procedures and troubleshooting.
+O Estágio Final terá foco em Procedimento operacionais e Solução de Problemas.
 
-### Tasks
+### Tarefas
 
 * [ ] Create monitoring alerts
 * [ ] Simulate infrastructure failures
@@ -521,122 +521,122 @@ The final stage will focus on operational procedures and troubleshooting.
 
 ---
 
-# 12. Troubleshooting Scenarios
+# 12. Cenários de Solução de Problemas
 
-The laboratory will also be used to simulate common infrastructure incidents.
+O Laboratório será utilizado para simular erros e incidentes comuns em infrastrutura.
 
-Examples include:
+Examplos incluem:
 
 ```text
-Network connectivity failure
+Falha de rede
         ↓
-DNS failure
+Falha de DNS
         ↓
-Domain authentication failure
+Falha de autenticação de domínio
         ↓
-File server unavailable
+Servidor de arquivos indisponível
         ↓
-Incorrect permissions
+Permissões incorretas
         ↓
-Monitoring alert
+Alertas de monitoramento
         ↓
-Service failure
+Falha de serviço
         ↓
-Resource exhaustion
+Exaustação de recursos
 ```
 
-Possible scenarios include:
+Possíveis cenários incluem:
 
-* High CPU utilization
-* High memory utilization
-* Disk space exhaustion
-* Network interface failure
-* DNS resolution failure
-* Firewall rule misconfiguration
-* Service stopped
-* Incorrect file permissions
-* Domain authentication failure
-* SMB connectivity failure
-* Monitoring agent failure
+* Alta utilização de CPU
+* Alta utilização de memória
+* Falta de espaço em disco
+* Falha de interface de rede
+* Falha de resolução de DNS
+* Falha de configuração de regra de firewall
+* Serviço parado
+* Permissão incorreta em arquivos
+* Falha de autenticação no domínio
+* Falha de conectividade de SMB
+* Falha no agente de monitoramento
 
-Each scenario should be documented with:
+Cada cenário deve ser documentado com:
 
-1. Symptoms
-2. Investigation
-3. Commands used
-4. Root cause
-5. Corrective action
-6. Validation
-7. Preventive action
-
----
-
-# 13. Documentation Standards
-
-Configuration changes and troubleshooting procedures will be documented throughout the implementation.
-
-Documentation should include:
-
-* Date
-* Component
-* Change performed
-* Reason for change
-* Commands executed
-* Configuration changes
-* Validation performed
-* Result
-* Problems encountered
-* Resolution
-
-The objective is to maintain a reproducible record of the laboratory.
+1. Sintomas
+2. Investigação
+3. Comandos utilizados
+4. Causa raiz
+5. Ação corretiva
+6. Validação
+7. Ação Preventiva
 
 ---
 
-# 14. Design Principles
+# 13. Padrões de Documentação
 
-The laboratory follows the following principles:
+As alterações de configuração e os procedimentos de troubleshooting serão documentados ao longo da implementação.
 
-### Network Isolation
+A documentação deverá incluir:
 
-Keep infrastructure services isolated from the physical network whenever practical.
+* Data
+* Componente
+* Alteração realizada
+* Motivo da alteração
+* Comandos executados
+* Alterações de configuração
+* Validação realizada
+* Resultado
+* Problemas encontrados
+* Resolução
 
-### Static Infrastructure Addressing
-
-Use static IP addresses for infrastructure servers.
-
-### Dynamic Client Addressing
-
-Use DHCP for client workstations.
-
-### Minimal Server Installation
-
-Keep Linux infrastructure servers without graphical interfaces whenever practical.
-
-### Remote Administration
-
-Prefer remote administration through SSH.
-
-### Incremental Implementation
-
-Validate each infrastructure component before moving to the next stage.
-
-### Documentation
-
-Document configuration changes, incidents, troubleshooting procedures and root causes.
-
-### Controlled Failure Simulation
-
-Simulate infrastructure failures in a controlled environment.
-
-### Resource Optimization
-
-Avoid unnecessary resource consumption due to the laboratory's hardware limitations.
+O objetivo é manter um registro reproduzível do laboratório.
 
 ---
 
-# 15. Project Structure
+# 14. Princípios de Design
 
-The documentation and configuration files will be organized as the project evolves.
+O laboratório segue os seguintes princípios:
+
+### Isolamento de Rede
+
+Manter os serviços de infraestrutura isolados da rede física sempre que possível.
+
+### Endereçamento Estático da Infraestrutura
+
+Utilizar endereços IP estáticos para os servidores de infraestrutura.
+
+### Endereçamento Dinâmico dos Clientes
+
+Utilizar DHCP para as estações de trabalho dos clientes.
+
+### Instalação Mínima dos Servidores
+
+Manter os servidores de infraestrutura Linux sem interfaces gráficas sempre que possível.
+
+### Administração Remota
+
+Priorizar a administração remota por meio do SSH.
+
+### Implementação Incremental
+
+Validar cada componente da infraestrutura antes de avançar para a próxima etapa.
+
+### Documentação
+
+Documentar alterações de configuração, incidentes, procedimentos de troubleshooting e causas raiz.
+
+### Simulação Controlada de Falhas
+
+Simular falhas de infraestrutura em um ambiente controlado.
+
+### Otimização de Recursos
+
+Evitar o consumo desnecessário de recursos devido às limitações de hardware do laboratório.
+
+---
+
+# 15. Estruturação do Projeto
+
+A documentação e os arquivos de configuração serão organizados à medida que o projeto evoluir.
 
 ```text
 linux-corporate-infrastructure-lab/
@@ -669,7 +669,7 @@ linux-corporate-infrastructure-lab/
 
 ---
 
-# 16. Planned Services
+# 16. Serviços Planejados
 
 | Hostname | Service                    | IP Address    |
 | -------- | -------------------------- | ------------- |
@@ -682,18 +682,18 @@ linux-corporate-infrastructure-lab/
 
 ---
 
-# 17. Expected Learning Outcomes
+# 17. Resultados Esperados de Aprendizag
 
 Ao final da implementação, o laboratório deverá permitir a prática dos seguintes conhecimentos:
 
 * Proxmox VE
 * Virtualização
-* Linux Server Administration
+* Administração de Servidores Linux
 * TCP/IP
-* Subnetting
-* VLAN and network segmentation concepts
+* Subnetting (Sub-redes)
+* Conceitos de VLAN e segmentação de rede
 * Firewall
-* Routing
+* Roteamento
 * DNS
 * DHCP
 * Samba
@@ -701,41 +701,41 @@ Ao final da implementação, o laboratório deverá permitir a prática dos segu
 * Kerberos
 * LDAP
 * SMB
-* Windows Domain Integration
-* Linux Domain Integration
+* Integração de estações Windows ao domínio
+* Integração de estações Linux ao domínio
 * Zabbix
 * Grafana
-* System Monitoring
+* Monitoramento de Sistemas
 * Troubleshooting
-* Incident Documentation
-* Infrastructure Documentation
+* Documentação de incidentes
+* Documentação de infraestrutura
 
 ---
 
-# 18. Future Improvements
+# 18. Melhorias Futuras
 
 Conforme os recursos disponíveis e a evolução do laboratório, novas funcionalidades poderão ser adicionadas.
 
 Possíveis melhorias:
 
-* [ ] Additional Linux servers
-* [ ] Additional Windows workstation
-* [ ] Centralized logging
-* [ ] Backup server
-* [ ] Ansible automation
-* [ ] Git-based configuration management
-* [ ] Network monitoring
-* [ ] Advanced firewall rules
-* [ ] VLAN segmentation
+* [ ] Servidor Linux adicionais
+* [ ] Estação de trabalho Windows Adicional
+* [ ] Centralização de Logs
+* [ ] Servidor de backup
+* [ ] Automação com ansible
+* [ ] Gerenciamento de configurações baseadas em Git
+* [ ] Monitoramento de rede
+* [ ] Regras Avançadas de Firewall
+* [ ] Segmentação de Redes com VLANs
 * [ ] VPN
-* [ ] High availability experiments
-* [ ] Infrastructure-as-Code experiments
-* [ ] Automated deployment
-* [ ] Disaster recovery testing
+* [ ] Experimentos com alta disponibilidade (High availability)
+* [ ] Experimento com Infraestrure-as-Code (IaC)
+* [ ] Implantação automatizada
+* [ ] Testes de recuperação de desastres (Disaster recovery)
 
 ---
 
-# 19. Conclusion
+# 19. Conclusão
 
 O **Linux Corporate Infrastructure Lab** tem como objetivo fornecer um ambiente controlado para desenvolvimento e documentação de conhecimentos relacionados à infraestrutura de TI.
 
